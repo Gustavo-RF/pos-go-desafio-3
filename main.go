@@ -48,11 +48,14 @@ func main() {
 	})
 
 	// cria o Use case, usando o wire
+	// wire
 	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
+	// listOrderUseCase := NewListOrderUseCase(db, eventDispatcher)
 
 	// inicia o servidor web
 	webserver := webserver.NewWebServer(configs.WebServerPort)
 	webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
+	webserver.AddHandler("/", webOrderHandler.List)
 	webserver.AddHandler("/order", webOrderHandler.Create)
 
 	fmt.Println("Starting web server on port", configs.WebServerPort)
