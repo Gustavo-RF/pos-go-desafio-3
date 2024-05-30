@@ -40,9 +40,10 @@ func (c *ListOrderUseCase) Execute() ([]OrderListOutputDTO, error) {
 
 	for _, order := range orders {
 		orderListOutput := OrderListOutputDTO{
-			ID:    order.ID,
-			Price: order.Price,
-			Tax:   order.Tax,
+			ID:         order.ID,
+			Price:      order.Price,
+			Tax:        order.Tax,
+			FinalPrice: order.FinalPrice,
 		}
 
 		order.CalculateFinalPrice()

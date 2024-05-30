@@ -50,7 +50,7 @@ func main() {
 	// cria o Use case, usando o wire
 	// wire
 	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
-	// listOrderUseCase := NewListOrderUseCase(db, eventDispatcher)
+	listOrderUseCase := NewListOrderUseCase(db, eventDispatcher)
 
 	// inicia o servidor web
 	webserver := webserver.NewWebServer(configs.WebServerPort)
@@ -62,9 +62,14 @@ func main() {
 	go webserver.Start()
 
 	// inicia o servidor grpc
+	// https://grpc.io/docs/languages/go/quickstart/
+	// protoc --go_out=. --go-grpc_out=. internal/infra/grpc/protofiles/order.proto
+
+	// https://github.com/ktr0731/evans
+	//  evans --proto internal/infra/grpc/protofiles/order.proto repl
 	grpcServer := grpc.NewServer()
-	createOrderService := service.NewOrderService(*createOrderUseCase)
-	pb.RegisterOrderServiceServer(grpcServer, createOrderService)
+	orderGrpcService := service.NewOrderService(*createOrderUseCase, *listOrderUseCase)
+	pb.RegisterOrderServiceServer(grpcServer, orderGrpcService)
 	reflection.Register(grpcServer)
 
 	fmt.Println("Starting gRPC server on port", configs.GRPCServerPort)
