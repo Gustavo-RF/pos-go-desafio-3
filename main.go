@@ -84,13 +84,14 @@ func main() {
 	//go run github.com/99designs/gqlgen generate
 	srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
 		CreateOrderUseCase: *createOrderUseCase,
+		ListOrderUseCase:   *listOrderUseCase,
 	}}))
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
 	fmt.Println("Starting GraphQL server on port", configs.GraphQLServerPort)
 
-	http.ListenAndServe(":"+configs.GraphQLServerPort, nil)
+	http.ListenAndServe(fmt.Sprintf(":%s", configs.GraphQLServerPort), nil)
 }
 
 func getRabbitMQChannel(configs *configs.Conf) *amqp.Channel {
