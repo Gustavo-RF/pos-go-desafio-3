@@ -2,13 +2,16 @@ package entity
 
 import (
 	"errors"
+
+	"gorm.io/gorm"
 )
 
 type Order struct {
-	ID         string
+	ID         string `gorm:primaryKey`
 	Price      float64
 	Tax        float64
 	FinalPrice float64
+	gorm.Model
 }
 
 func NewOrder(id string, price float64, tax float64) (*Order, error) {

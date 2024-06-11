@@ -7,7 +7,6 @@
 package main
 
 import (
-	"database/sql"
 	"github.com/Gustavo-RF/desafio-3/internal/entity"
 	"github.com/Gustavo-RF/desafio-3/internal/event"
 	"github.com/Gustavo-RF/desafio-3/internal/infra/database"
@@ -15,6 +14,7 @@ import (
 	"github.com/Gustavo-RF/desafio-3/internal/usecase"
 	"github.com/Gustavo-RF/desafio-3/pkg/events"
 	"github.com/google/wire"
+	"gorm.io/gorm"
 )
 
 import (
@@ -23,21 +23,21 @@ import (
 
 // Injectors from wire.go:
 
-func NewCreateOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.CreateOrderUseCase {
+func NewCreateOrderUseCase(db *gorm.DB, eventDispatcher events.EventDispatcherInterface) *usecase.CreateOrderUseCase {
 	orderRepository := database.NewOrderRepository(db)
 	orderCreated := event.NewOrderCreated()
 	createOrderUseCase := usecase.NewCreateOrderUseCase(orderRepository, orderCreated, eventDispatcher)
 	return createOrderUseCase
 }
 
-func NewListOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.ListOrderUseCase {
+func NewListOrderUseCase(db *gorm.DB, eventDispatcher events.EventDispatcherInterface) *usecase.ListOrderUseCase {
 	orderRepository := database.NewOrderRepository(db)
 	orderCreated := event.NewOrderCreated()
 	listOrderUseCase := usecase.NewListOrderUseCase(orderRepository, orderCreated, eventDispatcher)
 	return listOrderUseCase
 }
 
-func NewWebOrderHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebOrderHandler {
+func NewWebOrderHandler(db *gorm.DB, eventDispatcher events.EventDispatcherInterface) *web.WebOrderHandler {
 	orderRepository := database.NewOrderRepository(db)
 	orderCreated := event.NewOrderCreated()
 	webOrderHandler := web.NewWebOrderHandler(eventDispatcher, orderRepository, orderCreated)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"net"
 	"net/http"
@@ -9,6 +8,7 @@ import (
 	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/Gustavo-RF/desafio-3/configs"
+	"github.com/Gustavo-RF/desafio-3/internal/entity"
 	"github.com/Gustavo-RF/desafio-3/internal/event/handler"
 	"github.com/Gustavo-RF/desafio-3/internal/infra/graph"
 	"github.com/Gustavo-RF/desafio-3/internal/infra/grpc/pb"
@@ -18,6 +18,8 @@ import (
 	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 
 	// mysql
 	_ "github.com/go-sql-driver/mysql"
@@ -32,11 +34,14 @@ func main() {
 	}
 
 	// conexão com o BD
-	db, err := sql.Open(configs.DBDriver, fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", configs.DBUser, configs.DBPassword, configs.DBHost, configs.DBPort, configs.DBName))
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", configs.DBUser, configs.DBPassword, configs.DBHost, configs.DBPort, configs.DBName)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
+
+	db.AutoMigrate(&entity.Order{})
 
 	// conexão com o RabbitMQ
 	rabbitMQChannel := getRabbitMQChannel(configs)
